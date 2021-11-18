@@ -1,0 +1,23 @@
+name: Build and push Docker image
+
+on:
+  # Manually trigger workflow
+  workflow_dispatch:
+    inputs:
+      anoma_rev:
+        description: Revision of anoma/anoma repo
+        required: true
+        default: master
+  # Trigger on schedule
+  #schedule:
+  #  - cron: '0 3 * * *'
+
+jobs:
+  build:
+    steps:
+      - uses: actions/checkout@v2
+      - uses: cachix/install-nix-action@v15
+      - run: nix-shell --run ./ci.sh
+        env:
+          ANOMA_REV: '${{ github.event.inputs.anoma_rev }}'
+          CI_REGISTRY_AUTH: '${{ secrets.REGISTRY_AUTH }}'
