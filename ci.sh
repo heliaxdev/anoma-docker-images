@@ -22,13 +22,7 @@ if [[ -n $registry_auth ]]; then
 		registry_index=https://index.docker.io/v2/
 	fi
 	cat <<DOCKER_CONF > ~/.docker/config.json
-	{
-		"auths": {
-			"$registry_index": {
-				"auth": "$(echo -n "$registry_auth" | base64)"
-			}
-		}
-	}
+{ "auths": { "$registry_index": { "auth": "$(echo -n "$registry_auth" | base64)" } } }
 DOCKER_CONF
 fi
 
