@@ -12,10 +12,9 @@ $(OUTPUT): $(CARGO_NIX)
 	  -o "$@"
 
 $(CARGO_NIX): $(ANOMA_SRC)
-	nix-shell -p crate2nix --command "crate2nix generate \
+	crate2nix generate \
 	  -f "$$(nix-store -r "$$(nix-instantiate --argstr ANOMA_REV $(ANOMA_REV) ./anoma-src.nix)")/Cargo.toml" \
-	  -o $@ \
-	  "
+	  -o $@
 
 $(ANOMA_SRC):
-	nix-shell -p nix-prefetch-github --command "nix-prefetch-github anoma anoma --rev '$(ANOMA_REV)'" >$@
+	nix-prefetch-github anoma anoma --rev '$(ANOMA_REV)' >$@
