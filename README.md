@@ -23,12 +23,12 @@ to a docker registry.
 To load the image into your local docker daemon, run:
 
 ```bash
-./anoma-v0.2.0 | docker load
+./stream-anoma-v0.2.0 | docker load
 ```
 
 You could also make an image archive, that can be loaded to a docker daemon or
 registry later on:
 
 ```bash
-./anoma-v0.2.0 | gzip > anoma-v0.2.0.tgz
+./stream-anoma-v0.2.0 | gzip > anoma-v0.2.0.tgz
 ```

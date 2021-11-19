@@ -30,4 +30,4 @@ echo "Push to $registry"
 src=./stream-anoma-$ANOMA_REV
 dst=docker://docker.io/heliaxdev/anoma:$tag
 
-"$src" | skopeo copy --insecure-policy docker-archive:/dev/stdin "$dst"
+"$src" | gzip | skopeo copy --insecure-policy docker-archive:/dev/stdin "$dst"
