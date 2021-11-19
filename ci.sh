@@ -10,6 +10,9 @@ registry_auth=${CI_REGISTRY_AUTH:-} # NOTE: this needs to be in format: username
 tag=$(date +%F) # XXX
 
 echo Build image
+# nix-prefetch-github has a hard-coded <nixpkgs> reference
+nixpkgs=$(nix eval --raw -f ./nixpkgs.nix)
+export NIX_PATH=nixpkgs=$nixpkgs
 make
 
 if [[ -n $registry_auth ]]; then

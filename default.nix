@@ -2,14 +2,14 @@
 , ANOMA_CHAIN_ID
 }:
 let
-  pkgs = import ./nixpkgs.nix { };
+  pkgs = import (import ./nixpkgs.nix) { };
 
   anomaSrc = import ./anoma-src.nix { inherit pkgs ANOMA_REV; };
 
   src = pkgs.runCommand "src" { } ''
     mkdir $out
     cp -r ${anomaSrc}/* $out/
-    cp ${./generated/Cargo- + ANOMA_REV + ".nix"} $out/Cargo.nix
+    cp ${./Cargo- + ANOMA_REV + ".nix"} $out/Cargo.nix
   '';
 
   anoma-bin = (import "${src}/default.nix" { }).apps.build.override { features = ["std"]; };

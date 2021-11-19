@@ -2,8 +2,8 @@ ANOMA_REV ?= v0.2.0
 ANOMA_CHAIN_ID ?= anoma-feigenbaum-0.ebb9e9f9013
 
 OUTPUT = stream-anoma-$(ANOMA_REV)
-CARGO_NIX = generated/Cargo-$(ANOMA_REV).nix
-ANOMA_SRC = generated/anoma-src.$(ANOMA_REV).json
+CARGO_NIX = Cargo-$(ANOMA_REV).nix
+ANOMA_SRC = anoma-src.$(ANOMA_REV).json
 
 $(OUTPUT): $(CARGO_NIX)
 	nix-build -j auto \

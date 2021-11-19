@@ -1,5 +1,5 @@
-{ pkgs ? import ./nixpkgs.nix {}
+{ pkgs ? import (import ./nixpkgs.nix) {}
 , ANOMA_REV
 }:
 
-pkgs.fetchFromGitHub (builtins.fromJSON (builtins.readFile (./generated/anoma-src. + ANOMA_REV + ".json")))
+pkgs.fetchFromGitHub (builtins.fromJSON (builtins.readFile (./anoma-src. + ANOMA_REV + ".json")))
