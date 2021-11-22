@@ -29,6 +29,13 @@ Start the network:
 ./tasks compose up --build
 ```
 
+Start shell in node which is _not_ a validator:
+
+```bash
+./tasks compose exec ledger sh
+anomac epoch # etc. etc.
+```
+
 All `docker-compose` commands can be invoked through `./tasks compose ...`
 
 Configure nftables for the docker network:

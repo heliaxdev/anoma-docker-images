@@ -1,3 +1,4 @@
+# Image with validator secrets
 ARG ANOMA_IMAGE
 FROM ${ANOMA_IMAGE}
 

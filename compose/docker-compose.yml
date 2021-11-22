@@ -48,3 +48,12 @@ services:
     networks:
       testnet:
         ipv4_address: "${NET_VALIDATOR_4}"
+
+  ledger:
+    build:
+      dockerfile: Dockerfile-normal
+      args:
+        ANOMA_IMAGE: "${ANOMA_IMAGE}"
+        CHAIN_ID: "${CHAIN_ID}"
+    networks:
+      testnet:
