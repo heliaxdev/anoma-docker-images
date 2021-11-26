@@ -1,0 +1,59 @@
+version: "3.9"
+
+networks:
+  testnet:
+    name: anoma-testnet
+    ipam:
+      driver: default
+      config:
+        - subnet: "${NET_ADDR}"
+
+services:
+  validator-1:
+    build:
+      args:
+        ANOMA_IMAGE: "${ANOMA_IMAGE}"
+        CHAIN_ID: "${CHAIN_ID}"
+        NODE_ID: validator-1
+    networks:
+      testnet:
+        ipv4_address: "${NET_VALIDATOR_1}"
+
+  validator-2:
+    build:
+      args:
+        ANOMA_IMAGE: "${ANOMA_IMAGE}"
+        CHAIN_ID: "${CHAIN_ID}"
+        NODE_ID: validator-2
+    networks:
+      testnet:
+        ipv4_address: "${NET_VALIDATOR_2}"
+
+  validator-3:
+    build:
+      args:
+        ANOMA_IMAGE: "${ANOMA_IMAGE}"
+        CHAIN_ID: "${CHAIN_ID}"
+        NODE_ID: validator-3
+    networks:
+      testnet:
+        ipv4_address: "${NET_VALIDATOR_3}"
+
+  validator-4:
+    build:
+      args:
+        ANOMA_IMAGE: "${ANOMA_IMAGE}"
+        CHAIN_ID: "${CHAIN_ID}"
+        NODE_ID: validator-4
+    networks:
+      testnet:
+        ipv4_address: "${NET_VALIDATOR_4}"
+
+  ledger:
+    build:
+      dockerfile: Dockerfile-normal
+      args:
+        ANOMA_IMAGE: "${ANOMA_IMAGE}"
+        CHAIN_ID: "${CHAIN_ID}"
+    networks:
+      testnet:

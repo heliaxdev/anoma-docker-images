@@ -1,0 +1,13 @@
+# Image without validator secrets
+ARG ANOMA_IMAGE
+FROM ${ANOMA_IMAGE}
+
+RUN rm /docker-entrypoint.d/*
+ARG CHAIN_ID
+RUN mkdir -p /data/${CHAIN_ID}
+COPY global-config.toml /data
+COPY ${CHAIN_ID}.toml /data
+COPY ${CHAIN_ID}/config.toml /data/${CHAIN_ID}/config.toml
+
+ENTRYPOINT []
+CMD anoman ledger
