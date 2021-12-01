@@ -12,12 +12,7 @@ let
     cp ${./Cargo- + ANOMA_REV + ".nix"} $out/Cargo.nix
   '';
 
-  anoma-bin = (import "${src}/default.nix" { }).apps.build.override { features = ["std"]; };
-
-  anoma-wasm = pkgs.runCommand "anoma-wasm" { } ''
-    mkdir -p $out/wasm
-    cp ${src}/wasm/checksums.json $out/wasm
-  '';
+  anomaPackages = import "${src}/default.nix" { };
 
   joinNetworkScript = pkgs.writeShellScript "join-network" ''
     echo "Joining network '$ANOMA_CHAIN_ID'" >&2
@@ -44,10 +39,9 @@ pkgs.dockerTools.streamLayeredImage {
   contents = [
     entrypoint
     pkgs.busybox
-    pkgs.tendermint
     pkgs.cacert
-    anoma-bin
-    anoma-wasm
+    anomaPackages.anoma
+    anomaPackages.wasm
   ];
 
   extraCommands = ''
