@@ -1,7 +1,5 @@
-let
-  pkgs = import (import ./nixpkgs.nix) { };
-in
-with pkgs;
+{ pkgs ? import (import ./nixpkgs.nix) {}
+}: with pkgs;
 mkShell {
   buildInputs = [
     crate2nix

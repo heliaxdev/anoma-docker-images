@@ -16,6 +16,8 @@ make ANOMA_REV=v0.2.0
 make ANOMA_REV=v0.2.0 ANOMA_CHAIN_ID=anoma-feigenbaum-0.ebb9e9f9013
 ```
 
+Use `ANOMA_FEATURES` to customize Cargo features passed the build.
+
 It creates an output called `stream-anoma-${ANOMA_REV}` in the current directory,
 which you can execute and pipe the output to the docker daemon, or even directly
 to a docker registry.
