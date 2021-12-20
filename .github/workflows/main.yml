@@ -9,7 +9,7 @@ on:
         required: true
         default: master
       image_tag:
-        description: Tag for the image (default: ${date}.${revision})
+        description: "Tag for the image (default: DATE.REV)"
         required: false
   # Trigger on schedule
   #schedule:
