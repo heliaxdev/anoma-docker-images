@@ -2,14 +2,18 @@
 
 set -euo pipefail
 
-export ANOMA_REV=${ANOMA_REV:-v0.2.0}
+export ANOMA_REV=${ANOMA_REV:?ANOMA_REV was not specified}
 
 registry=${CI_REGISTRY:-docker.io}
 registry_auth=${CI_REGISTRY_AUTH:-} # NOTE: this needs to be in format: username:password
 
-tag=$(date +%F) # XXX
+repo=heliaxdev/anoma
+tag=${IMAGE_TAG:-"$(date +%F).${ANOMA_REV::12}"}
+tag=$(echo -n "$tag" | tr -cs '[:alnum:]-._' '_')
 
-echo Build image
+echo "Building image $repo:$tag from github:anoma/anoma/$ANOMA_REV"
+echo "Image will be tagged $repo:$tag and pushed to registry $registry"
+
 # nix-prefetch-github has a hard-coded <nixpkgs> reference
 nixpkgs=$(nix eval --raw -f ./nixpkgs.nix)
 export NIX_PATH=nixpkgs=$nixpkgs
@@ -26,8 +30,9 @@ if [[ -n $registry_auth ]]; then
 DOCKER_CONF
 fi
 
-echo "Push to $registry"
 src=./stream-anoma-$ANOMA_REV
-dst=docker://docker.io/heliaxdev/anoma:$tag
+dst=docker://$registry/$repo:$tag
+
+echo "Copying image to $dst"
 
 "$src" | gzip | skopeo copy --insecure-policy docker-archive:/dev/stdin "$dst"

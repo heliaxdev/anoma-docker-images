@@ -8,6 +8,9 @@ on:
         description: Revision of anoma/anoma repo
         required: true
         default: master
+      image_tag:
+        description: Tag for the image (default: ${date}.${revision})
+        required: false
   # Trigger on schedule
   #schedule:
   #  - cron: '0 3 * * *'
@@ -17,8 +20,14 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
-      - uses: cachix/install-nix-action@v15
+      - uses: cachix/install-nix-action@v16
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+            extra-substituters = s3://heliaxdev-nixcache?region=eu-west-1
+            extra-trusted-public-keys = heliaxdev-nixcache?region=eu-west-1:GgmKSs1JLZWfQFWpGi+3cy7kb7bGZ19UBOHgaXdvuQg=
       - run: nix-shell --run ./ci.sh
         env:
           ANOMA_REV: '${{ github.event.inputs.anoma_rev }}'
+          IMAGE_TAG: '${{ github.event.inputs.image_tag }}'
           CI_REGISTRY_AUTH: '${{ secrets.REGISTRY_AUTH }}'
