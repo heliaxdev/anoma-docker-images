@@ -38,6 +38,9 @@ pkgs.dockerTools.streamLayeredImage {
   extraCommands = ''
     mkdir docker-entrypoint.d
     cp -a ${joinNetworkScript} docker-entrypoint.d/20-join-network.sh
+
+    # `anomac utils join-network` doesn't fully respect the base-dir setting
+    ln -s /data .anoma
   '';
 
   config = {
