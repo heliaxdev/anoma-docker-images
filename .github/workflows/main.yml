@@ -26,7 +26,7 @@ jobs:
             experimental-features = nix-command flakes
             extra-substituters = s3://heliaxdev-nixcache?region=eu-west-1
             extra-trusted-public-keys = heliaxdev-nixcache?region=eu-west-1:GgmKSs1JLZWfQFWpGi+3cy7kb7bGZ19UBOHgaXdvuQg=
-      - run: nix-shell --run ./ci.sh
+      - run: nix develop -c ./ci.sh
         env:
           ANOMA_REV: '${{ github.event.inputs.anoma_rev }}'
           IMAGE_TAG: '${{ github.event.inputs.image_tag }}'

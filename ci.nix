@@ -1,7 +1,7 @@
 { ANOMA_REV
 , ANOMA_CHAIN_ID
 , ANOMA_FEATURES ? ""
-, pkgs ? import (import ./nixpkgs.nix) { }
+, pkgs ? import <nixpkgs> { }
 , lib ? pkgs.lib
 }:
 let

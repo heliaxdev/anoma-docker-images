@@ -1,4 +1,4 @@
-{ pkgs ? import (import ./nixpkgs.nix) {}
+{ pkgs ? import <nixpkgs> {}
 , ANOMA_REV
 }:
 
