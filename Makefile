@@ -4,7 +4,7 @@ ANOMA_CHAIN_ID ?= anoma-feigenbaum-0.ebb9e9f9013
 OUTPUT = stream-anoma-$(ANOMA_REV)
 CARGO_NIX = Cargo-$(ANOMA_REV).nix
 ANOMA_SRC = anoma-src.$(ANOMA_REV).json
-ANOMA_FEATURES = std ABCI
+ANOMA_FEATURES = default
 
 $(OUTPUT): $(CARGO_NIX)
 	nix-build -j auto \
