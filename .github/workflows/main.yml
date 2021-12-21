@@ -12,21 +12,31 @@ on:
         description: "Tag for the image (default: DATE.REV)"
         required: false
   # Trigger on schedule
-  #schedule:
-  #  - cron: '0 3 * * *'
+  schedule:
+    - cron: '0 8-20/3 * * *'
 
 jobs:
   build:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
+
       - uses: cachix/install-nix-action@v16
         with:
           extra_nix_config: |
             extra-substituters = s3://heliaxdev-nixcache?region=eu-west-1
             extra-trusted-public-keys = heliaxdev-nixcache?region=eu-west-1:GgmKSs1JLZWfQFWpGi+3cy7kb7bGZ19UBOHgaXdvuQg=
-      - run: nix run
+
+      - name: Build and upload images for new releases
+        if: '${{ github.event_name == 'schedule' }}'
+        run: nix run .#do-releases
+
+      - name: Build and upload custom
+        if: '${{ github.event_name == 'workflow_dispatch' }}'
+        run: nix run
         env:
           ANOMA_REV: '${{ github.event.inputs.anoma_rev }}'
           IMAGE_TAG: '${{ github.event.inputs.image_tag }}'
-          CI_REGISTRY_AUTH: '${{ secrets.REGISTRY_AUTH }}'
+
+env:
+  CI_REGISTRY_AUTH: '${{ secrets.REGISTRY_AUTH }}'

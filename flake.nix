@@ -36,5 +36,13 @@
           ${builtins.readFile ./ci.sh} "$@"
         '';
       };
+
+      apps.${system} = {
+        do-releases = pkgs.writeShellApplication {
+          name = "do-releases";
+          runtimeInputs = with pkgs; [ jq curl skopeo ];
+          text = builtins.readFile ./do-releases.sh;
+        };
+      };
     };
 }
