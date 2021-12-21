@@ -30,7 +30,7 @@ crate2nix generate \
 	-o "$CARGO_NIX"
 
 # Build
-nix-build ci.nix -j auto \
+nix-build image.nix \
   --argstr ANOMA_REV "${ANOMA_REV}" \
   --argstr ANOMA_CHAIN_ID "${ANOMA_CHAIN_ID}" \
   --argstr ANOMA_FEATURES "${ANOMA_FEATURES}" \
