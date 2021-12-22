@@ -15,6 +15,7 @@ let
       passAsFile = [ "anomaSrc" "cargoNix" ];
       inherit anomaSrc cargoNix;
     } ''
+      mkdir $out
       cp -r -t "$out/" "${anomaSrc}"/*
       cat ${cargoNix} > $out/Cargo.nix
     '';
