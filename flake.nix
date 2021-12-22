@@ -12,7 +12,7 @@
     in
     {
 
-      apps.${system} = {
+      packages.${system} = {
 
         # nix run .#do-release
         do-releases = pkgs.writeShellApplication {
@@ -26,7 +26,7 @@
           name = "build-and-publish-image";
           runtimeInputs = with pkgs; [ crate2nix nix-prefetch-github skopeo jq ];
           text = ''
-            NIX_PATH="nixpkgs=${nixpkgs}"
+            export NIX_PATH="nixpkgs=${nixpkgs}"
             ${builtins.readFile ./ci.sh} "$@"
           '';
         };
