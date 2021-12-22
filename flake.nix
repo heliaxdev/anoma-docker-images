@@ -26,7 +26,7 @@
           name = "build-and-publish-image";
           runtimeInputs = with pkgs; [ crate2nix nix-prefetch-github skopeo jq ];
           text = ''
-            NIX_PATH="nixpkgs=${nixpkgs}
+            NIX_PATH="nixpkgs=${nixpkgs}"
             ${builtins.readFile ./ci.sh} "$@"
           '';
         };
