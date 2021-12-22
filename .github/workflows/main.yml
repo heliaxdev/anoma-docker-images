@@ -33,7 +33,7 @@ jobs:
 
       - name: Build and upload custom
         if: '${{ github.event_name == 'workflow_dispatch' }}'
-        run: nix run
+        run: nix run .#build-and-publish-image
         env:
           ANOMA_REV: '${{ github.event.inputs.anoma_rev }}'
           IMAGE_TAG: '${{ github.event.inputs.image_tag }}'

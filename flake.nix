@@ -6,42 +6,29 @@
   outputs = { self, nixpkgs }:
     let
       system = "x86_64-linux";
+
       pkgs = import nixpkgs { inherit system; };
+
     in
     {
-      devShell."${system}" = pkgs.mkShell {
-        packages = with pkgs; [
-          crate2nix
-          nix-prefetch-github
-          skopeo
-          jq
-        ];
-        NIX_PATH = "nixpkgs=${nixpkgs}";
-      };
-
-      defaultPackage.${system} = pkgs.symlinkJoin {
-        name = "anoma-docker-ci";
-        paths = with pkgs; [
-          crate2nix
-          nix-prefetch-github
-          skopeo
-          jq
-        ];
-      };
-
-      defaultApp.${system} = pkgs.writeShellApplication {
-        name = "build-anoma-image";
-        runtimeInputs = [ self.defaultPackage.${system} ];
-        text = ''
-          ${builtins.readFile ./ci.sh} "$@"
-        '';
-      };
 
       apps.${system} = {
+
+        # nix run .#do-release
         do-releases = pkgs.writeShellApplication {
           name = "do-releases";
           runtimeInputs = with pkgs; [ jq curl skopeo ];
           text = builtins.readFile ./do-releases.sh;
+        };
+
+        # nix run .#build-and-publish-image
+        build-and-publish-image = pkgs.writeShellApplication {
+          name = "build-and-publish-image";
+          runtimeInputs = with pkgs; [ crate2nix nix-prefetch-github skopeo jq ];
+          text = ''
+            NIX_PATH="nixpkgs=${nixpkgs}
+            ${builtins.readFile ./ci.sh} "$@"
+          '';
         };
       };
     };

@@ -20,5 +20,5 @@ skopeo list-tags docker://docker.io/heliaxdev/anoma | jq -r .Tags[] >dockerhub.t
 comm -31 <(sort dockerhub.tags) <(sort releases.tags) | while read -r tag
 do
 	echo "Processing tag $tag"
-	ANOMA_REV=$tag IMAGE_TAG=$tag nix run
+	ANOMA_REV=$tag IMAGE_TAG=$tag nix run .#build-and-publish-image
 done
