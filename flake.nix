@@ -10,7 +10,8 @@
       pkgs = import nixpkgs { inherit system; };
 
     in
-    {
+    rec {
+      defaultPackage.${system} = packages.${system}.build-and-publish-image;
 
       packages.${system} = {
 

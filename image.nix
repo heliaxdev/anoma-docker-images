@@ -20,14 +20,27 @@ let
       cat ${cargoNix} > $out/Cargo.nix
     '';
   in
-  import "${src}/default.nix" (lib.optionalAttrs (ANOMA_FEATURES != "") { features = lib.splitString " " ANOMA_FEATURES; });
+  import "${src}/default.nix" (lib.optionalAttrs (ANOMA_FEATURES != "default") { features = lib.splitString " " ANOMA_FEATURES; });
 
   joinNetworkScript = pkgs.writeShellScript "join-network" ''
-    echo "Joining network '$ANOMA_CHAIN_ID'" >&2
-    anomac utils join-network --chain-id=''${ANOMA_CHAIN_ID}
+    if [ -n "$ANOMA_CHAIN_ID" ]; then
+      echo "Joining network '$ANOMA_CHAIN_ID'" >&2
+      anomac utils join-network --chain-id=''${ANOMA_CHAIN_ID}
+    fi
+  '';
+
+  patchConfigScript = pkgs.writeShellScript "patch-config" ''
+    if [ -n "$ANOMA_CHAIN_ID" ]; then
+      sed -i -e s/127.0.0.1/0.0.0.0/ $ANOMA_BASE_DIR/$ANOMA_CHAIN_ID/config.toml
+    fi
   '';
 
   entrypoint = pkgs.writeShellScriptBin "docker-entrypoint.sh" (builtins.readFile ./entrypoint.sh);
+
+  entrypointScripts = pkgs.runCommand "entrypoint-scripts" { } ''
+    mkdir -p $out/docker-entrypoint.d
+    cp -a -t $out/docker-entrypoint.d ${joinNetworkScript} ${patchConfigScript}
+  '';
 in
 pkgs.dockerTools.streamLayeredImage {
   name = "heliaxdev/anoma";
@@ -35,6 +48,7 @@ pkgs.dockerTools.streamLayeredImage {
 
   contents = [
     entrypoint
+    entrypointScripts
     pkgs.busybox
     pkgs.cacert
     anomaPackages.anoma
@@ -42,9 +56,6 @@ pkgs.dockerTools.streamLayeredImage {
   ];
 
   extraCommands = ''
-    mkdir docker-entrypoint.d
-    cp -a ${joinNetworkScript} docker-entrypoint.d/20-join-network.sh
-
     # `anomac utils join-network` doesn't fully respect the base-dir setting
     ln -s /data .anoma
   '';
@@ -55,10 +66,11 @@ pkgs.dockerTools.streamLayeredImage {
     Cmd = [ "anoman" "ledger" "run" ];
 
     ExposedPorts = {
-      "26656/tcp" = { }; # Ledger P2P
-      "26657/tcp" = { }; # Ledger RPC
-      "26659/tcp" = { }; # P2P intent gossip
-      "26660/tcp" = { }; # RPC intent gossip
+      "26656/tcp" = { }; # Tendermint P2P
+      "26657/tcp" = { }; # Tendermint RPC
+      "26658/tcp" = { }; # Ledger RPC
+      "26659/tcp" = { }; # Intent gossip P2P
+      "26660/tcp" = { }; # Intent gossip RPC
     };
 
     WorkingDir = "/";
