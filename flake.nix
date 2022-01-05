@@ -25,7 +25,7 @@
         # nix run .#build-and-publish-image
         build-and-publish-image = pkgs.writeShellApplication {
           name = "build-and-publish-image";
-          runtimeInputs = with pkgs; [ crate2nix nix-prefetch-github skopeo jq ];
+          runtimeInputs = with pkgs; [ nix-prefetch-github jq ];
           text = ''
             export NIX_PATH="nixpkgs=${nixpkgs}"
             ${builtins.readFile ./ci.sh} "$@"

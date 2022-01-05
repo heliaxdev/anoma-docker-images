@@ -40,7 +40,7 @@ else
 	revHash=$(jq -r .rev <<<"$anomaJson")
 
 	cargoNix=$(mktemp -p .)
-	crate2nix generate \
+	"$(nix-build '<nixpkgs>' -A skopeo --no-out-link)/bin/crate2nix" generate \
 		-f "$(nix-store -r "$anomaSrc")/Cargo.toml" \
 		--no-default-features \
 		--features "$ANOMA_FEATURES" \
@@ -76,5 +76,7 @@ DOCKER_CONF
 
 	echo "Copying image to $dst"
 
-	./"$output" | gzip | skopeo copy --insecure-policy docker-archive:/dev/stdin "$dst"
+	skopeo=$(nix-build '<nixpkgs>' -A skopeo --no-out-link)/bin/skopeo
+
+	./"$output" | gzip | "$skopeo" copy --insecure-policy docker-archive:/dev/stdin "$dst"
 fi
