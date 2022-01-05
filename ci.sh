@@ -27,7 +27,7 @@ if meta=$(nix flake metadata --json "github:anoma/anoma/$rev"); then
 
 	echo "Building from flake $url" >&2
 
-	nix-build image.nix \
+	nix-build "$THIS_SRC/image.nix" \
 		--arg anoma "builtins.getFlake \"$url\"" \
 		--argstr ANOMA_CHAIN_ID "$ANOMA_CHAIN_ID" \
 		-o "$output"

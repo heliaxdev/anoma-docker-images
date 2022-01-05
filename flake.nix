@@ -28,6 +28,7 @@
           runtimeInputs = with pkgs; [ nix-prefetch-github jq ];
           text = ''
             export NIX_PATH="nixpkgs=${nixpkgs}"
+            export THIS_SRC=${./.}
             ${builtins.readFile ./ci.sh} "$@"
           '';
         };
