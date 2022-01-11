@@ -40,14 +40,14 @@ else
 	revHash=$(jq -r .rev <<<"$anomaJson")
 
 	cargoNix=$(mktemp -p .)
-	"$(nix-build '<nixpkgs>' -A skopeo --no-out-link)/bin/crate2nix" generate \
+	"$(nix-build '<nixpkgs>' -A crate2nix --no-out-link)/bin/crate2nix" generate \
 		-f "$(nix-store -r "$anomaSrc")/Cargo.toml" \
 		--no-default-features \
 		--features "$ANOMA_FEATURES" \
 		-o "$cargoNix"
 
 	# Build
-	nix-build image.nix \
+	nix-build "$THIS_SRC/image.nix" \
 		--arg anomaSrc "$(nix-store -r "$anomaSrc")" \
 		--arg cargoNix "$cargoNix" \
 		--argstr ANOMA_FEATURES "$ANOMA_FEATURES" \
