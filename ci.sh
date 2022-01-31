@@ -27,8 +27,14 @@ if meta=$(nix flake metadata --json "github:anoma/anoma/$rev"); then
 
 	echo "Building from flake $url" >&2
 
+	# Generate Cargo.nix, in case it is out-of-date
+	rm -rf ./anoma
+	url="github:anoma/anoma/$rev"
+	nix flake clone "$url" --dest anoma
+	env -C anoma nix run .#generateCargoNix
+
 	nix-build "$THIS_SRC/image.nix" \
-		--arg anoma "builtins.getFlake \"$url\"" \
+		--arg anoma 'builtins.getFlake (builtins.toString ./anoma)' \
 		--argstr ANOMA_CHAIN_ID "$ANOMA_CHAIN_ID" \
 		-o "$output"
 else
