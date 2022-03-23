@@ -9,6 +9,7 @@ while [[ $# -gt 0 ]]; do
 	case $1 in
 		--no-upload) UPLOAD=; shift ;;
 		--rev) ANOMA_REV=$2; shift 2 ;;
+		--image-tag) IMAGE_TAG=$2; shift 2;;
 		-o) OUTPUT=$2; shift 2 ;;
 		*) echo "usage: $(basename "$0") [--no-upload] [--rev ANOMA_REV] [-o FILE]" >&2; exit 2 ;;
 	esac
@@ -20,23 +21,30 @@ registry=${CI_REGISTRY:-docker.io}
 registry_auth=${CI_REGISTRY_AUTH:-} # NOTE: this needs to be in format: username:password
 repo=${IMAGE_REPO:-heliaxdev/anoma}
 output=${OUTPUT:-"stream-anoma-$(echo -n "$rev" | tr -cs '[:alnum:]-._' '-')"}
+url="github:anoma/anoma/$rev"
 
-if meta=$(nix flake metadata --json "github:anoma/anoma/$rev"); then
-	url=$(<<<"$meta" jq -r .url)
+if meta=$(nix flake metadata --json "$url"); then
+	storePath=$(<<<"$meta" jq -r .path)
 	revHash=$(<<<"$meta" jq -r .revision)
+
+	nix flake prefetch "$url"
 
 	echo "Building from flake $url" >&2
 
-	# Generate Cargo.nix, in case it is out-of-date
-	rm -rf ./anoma
-	url="github:anoma/anoma/$rev"
-	nix flake clone "$url" --dest anoma
-	env -C anoma nix run .#generateCargoNix
+	build(){
+		nix-build "$THIS_SRC/image.nix" \
+			--arg anoma "builtins.getFlake (builtins.toString $1)" \
+			--argstr ANOMA_CHAIN_ID "$ANOMA_CHAIN_ID" \
+			-o "$output"
+	}
 
-	nix-build "$THIS_SRC/image.nix" \
-		--arg anoma 'builtins.getFlake (builtins.toString ./anoma)' \
-		--argstr ANOMA_CHAIN_ID "$ANOMA_CHAIN_ID" \
-		-o "$output"
+	# If first build attempt fails, generate Cargo.nix and try
+	# again, in case it is out-of-date
+	if ! build "$storePath"; then
+		dev=$(mktemp -p .)
+		env -C "$dev" nix run .\#generateCargoNix
+		build "$dev"
+	fi
 else
 	echo "No flake in $rev. Doing crate2nix instead" >&2
 
