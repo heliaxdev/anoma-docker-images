@@ -5,10 +5,10 @@ set -euo pipefail
 endpoint=https://api.github.com
 owner=anoma
 repo=anoma
-
-maxAge=$(date +%s --date=5days\ ago)
+maxAgeDays=14days
 
 # Anoma releases
+maxAge=$(date +%s --date="$maxAgeDays ago")
 curl -sSLf $endpoint/repos/$owner/$repo/releases | \
 	jq -r  ".[] | select((.draft == false) and (.created_at | fromdate) > $maxAge) | .tag_name" \
 	| tac >releases.tags
